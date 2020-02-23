@@ -2,7 +2,7 @@ require_relative "bank_account.rb"
 
 class Transfer
     attr_accessor :sender, :receiver, :amount
-    attr_reader :status, :executed
+    attr_reader :status
 
 
     def initialize(sender, receiver, transfer_amount)
@@ -10,7 +10,6 @@ class Transfer
       @receiver = receiver
       @status = "pending"
       @amount = transfer_amount
-      @executed = "pending"
       @transfer = [sender, receiver, transfer_amount]
     end
 
@@ -23,18 +22,13 @@ class Transfer
     end
 
     def execute_transaction
-      if @executed != "executed"
-        if self.valid? && @sender.balance > @amount
-          @sender.balance -= @amount
-          @receiver.balance += @amount
-          @status = "complete"
-          @executed = "executed"
-        else
-          @status = "rejected"
-          "Transaction rejected. Please check your account balance."
-        end
+      if self.valid? && @sender.balance > @amount && @status == "pending"
+        @sender.balance -= @amount
+        @receiver.balance += @amount
+        @status = "complete"
       else
-        nil
+        @status = "rejected"
+        "Transaction rejected. Please check your account balance."
       end
   end
 
